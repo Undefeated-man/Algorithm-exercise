@@ -7,7 +7,7 @@
 	#		                                                                  #
 	#		Programmer: Vincent Holmes                                        #
 	#		                                                                  #
-	#		Description: 动态规划算法,优化为两步长                            #
+	#		Description: 动态规划算法,优化考虑至三步长                        #
 	#		                                                                  #
 	#		Start_date: 2020-07-25                                            #
 	#		                                                                  #
@@ -17,7 +17,7 @@
 """
 
 
-import numpy as np
+from numpy import random as nprandom
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import MultipleLocator
 
@@ -71,21 +71,16 @@ class Min:
         self.path = [[0,0]]
         self.x_lst = []
         self.y_lst = []
-        
+        self.size = (ary.shape[0]-1, ary.shape[1]-1)
         
     def min(self):
         """
         Function:
             to find and return the mini-sum of the path
         """
-        for i in range(round(sum(self.ary.shape)/2-1)):
-            try:
-                x, y = self.jump()
-                self.path.append(x)
-                self.path.append(y)
-            except:
-                x = self.jump()
-                self.path.append(x)
+        for i in range(sum(self.size)):
+            x = self.jump()
+            self.path.append(x)
         final_path = []
         [final_path.append(item) for item in self.path if item not in final_path]
         print("The final path is: %s"%(final_path))
@@ -100,31 +95,43 @@ class Min:
     def jump(self):
         f_step = self.posit(self.path[-1])
         sec_step = {}
+        td_step = {}
         for n in f_step:
             sec_step[str(n)] = self.posit(n)
+            for m in sec_step[str(n)]:
+                td_step[str(m)] = self.posit(m)
         
         # initialize the path chosing
         sum = -1
-        mini = [[-1, -1]]
+        mini = [(-1, -1)]
         for x in f_step:
             for y in sec_step[str(x)]:
-                try:
-                    # print("%s %s"%(x, y))
-                    # print(self.ary[x, y])
-                    tem_sum = self.ary[x[0]][x[1]] + self.ary[y[0]][y[1]]
-                    if sum == -1:
-                        sum = tem_sum
-                        mini = [x, y]
-                    elif sum > tem_sum:
-                        sum = tem_sum
-                        mini = [x, y]
-                except:
-                    pass
+                for z in td_step[str(y)]:
+                    try:
+                        # print("%s %s"%(x, y))
+                        # print(self.ary[x, y])
+                        
+                        if tuple(z) <= self.size:
+                            tem_sum = self.ary[x[0]][x[1]] + self.ary[y[0]][y[1]] + self.ary[z[0]][z[1]]
+                        elif tuple(y) <= self.size:
+                            tem_sum = self.ary[x[0]][x[1]] + self.ary[y[0]][y[1]]
+                        else:
+                            tem_sum = self.ary[x[0]][x[1]]
+                            
+                        if sum == -1:
+                            sum = tem_sum
+                            mini = [x, y]
+                        elif sum > tem_sum:
+                            sum = tem_sum
+                            mini = [x, y]
+                    except:
+                        pass
+        
         # print(mini)
-        if mini != [[-1, -1]]:
-            return mini[0], mini[1]
+        if mini != [(-1, -1)]:
+            return mini[0]
         else:
-            return [-1, -1], [-1, -1]
+            return self.size
         
         
     def posit(self, p):
@@ -139,7 +146,7 @@ class Min:
 
 if __name__ == "__main__":
     # initialize
-    rand = np.random.randint(1, 10, (7,5))
+    rand = nprandom.randint(1, 10, (7,5))
     m = Min(rand)
 
     # show the array

@@ -31,8 +31,6 @@ def plot2d(x_lst, y_lst, title=None):
     Args:
         x_lst是一个包含了所有要画的取线的x矩阵的列表。如要画3条线就有3个矩阵;
         y_lst是一个包含了所有要画的取线的y矩阵的列表。如要画3条线就有3个矩阵;
-        n_sub是你要多少个子图(subplot)的数组。不画子图则可忽略此参数。
-        name_lst是每条曲线的名
         title是整个图的标题，默认为无
         
     Returns:
